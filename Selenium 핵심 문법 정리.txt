@@ -1,0 +1,47 @@
+Selenium 핵심 문법 정리
+1. 브라우저 실행 / 종료
+pythondriver = webdriver.Chrome(service=service)  # 브라우저 열기
+driver.get("https://www.yes24.com")         # URL 이동
+driver.quit()                                # 브라우저 닫기
+
+2. 요소 찾기
+python# 단수 (1개) - 없으면 에러 발생
+driver.find_element(By.ID, "query")              # id로 찾기
+driver.find_element(By.CSS_SELECTOR, "a.gd_name") # CSS로 찾기
+
+# 복수 (여러개) - 없으면 빈 리스트 반환
+driver.find_elements(By.CSS_SELECTOR, "a.gd_name")
+By 종류예시사용 상황By.ID"query"id 속성이 있을 때By.CSS_SELECTOR"a.gd_name"클래스, 태그 조합By.XPATH"//a[@class='gd_name']"복잡한 구조
+
+3. CSS 선택자 규칙
+python"a.gd_name"          # <a class="gd_name">
+"span.authPub.info_auth"  # 클래스 2개 동시에 (띄어쓰기 X, 점으로 연결)
+"span.authPub a"     # span.authPub 안의 a 태그 (띄어쓰기 = 자식)
+"a[title='2']"       # title 속성값이 '2'인 a 태그
+"div.itemUnit"       # <div class="itemUnit">
+
+4. 요소 조작
+pythonelement.click()             # 클릭
+element.send_keys("파이썬")  # 텍스트 입력
+element.send_keys(Keys.ENTER) # 엔터키
+element.text.strip()        # 텍스트 가져오기 (공백제거)
+element.get_attribute("href") # 속성값 가져오기
+
+5. 반복 수집 패턴
+pythonitems = driver.find_elements(By.CSS_SELECTOR, "div.itemUnit")
+
+for i, item in enumerate(items, 1):   # i = 1부터 시작
+    # item 안에서 또 찾기
+    title = item.find_element(By.CSS_SELECTOR, "a.gd_name").text.strip()
+
+6. 에러 방지 (try/except)
+python# 요소가 없으면 에러나므로 항상 try/except 사용
+try:
+    title = item.find_element(By.CSS_SELECTOR, "a.gd_name").text.strip()
+except:
+    title = "없음"   # 없으면 기본값
+
+7. 대기 (time.sleep)
+pythontime.sleep(2)  # 2초 대기 - 페이지 로딩 기다릴 때 필수
+
+💡 핵심 원칙: find_element(단수) 는 없으면 에러, find_elements(복수) 는 없으면 빈 리스트. 그래서 복수형 + try/except 조합이 안전
